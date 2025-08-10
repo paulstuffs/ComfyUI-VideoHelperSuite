@@ -123,6 +123,14 @@ class MergeLatents:
     FUNCTION = "merge"
 
     def merge(self, latents_A: dict, latents_B: dict, merge_strategy: str, scale_method: str, crop: str):
+        # Handle None cases
+        if latents_A is None or latents_B is None:
+            if latents_A is None and latents_B is None:
+                raise ValueError("Nothing to merge.")
+            latents = latents_B if latents_A is None else latents_A
+            return latents.copy(), len(latents["samples"])
+
+        # Extract "samples" from both
         latents = []
         latents_A = latents_A.copy()["samples"]
         latents_B = latents_B.copy()["samples"]
@@ -174,6 +182,13 @@ class MergeImages:
     FUNCTION = "merge"
 
     def merge(self, images_A: Tensor, images_B: Tensor, merge_strategy: str, scale_method: str, crop: str):
+        # Handle None cases
+        if images_A is None or images_B is None:
+            if images_A is None and images_B is None:
+                raise ValueError("Nothing to merge.")
+            images = images_B if images_A is None else images_A
+            return images, images.size(0)
+
         images = []
         # if not same dimensions, do scaling
         if images_A.shape[3] != images_B.shape[3] or images_A.shape[2] != images_B.shape[2]:
@@ -225,6 +240,13 @@ class MergeMasks:
     FUNCTION = "merge"
 
     def merge(self, mask_A: Tensor, mask_B: Tensor, merge_strategy: str, scale_method: str, crop: str):
+        # Handle None cases
+        if mask_A is None or mask_B is None:
+            if mask_A is None and mask_B is None:
+                raise ValueError("Nothing to merge.")
+            mask = mask_B if mask_A is None else mask_A
+            return mask, mask.size(0)
+
         masks = []
         # if not same dimensions, do scaling
         if mask_A.shape[2] != mask_B.shape[2] or mask_A.shape[1] != mask_B.shape[1]:
